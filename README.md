@@ -15,8 +15,15 @@ lovable-mcp/
 
 ## Install (colleague)
 
-Copy (or `git clone`) the `lovable-mcp/` folder into your Hermes skills
-directory, then restart Hermes:
+**Option A — clone from GitHub:**
+
+```bash
+git clone https://github.com/abacusbtc/lovable-mcp-skill.git
+cp -r lovable-mcp-skill/lovable-mcp ~/.hermes/skills/devops/
+```
+
+**Option B — from a zip:** copy (or unzip) the `lovable-mcp/` folder into your
+Hermes skills directory, then restart Hermes:
 
 ```bash
 mkdir -p ~/.hermes/skills/devops
