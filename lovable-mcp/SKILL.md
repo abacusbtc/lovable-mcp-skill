@@ -36,7 +36,8 @@ standalone driver script that works even before MCP tools load into a session.
   the workspace (default ON for Free/Pro/Business; Enterprise admins must enable
   it in Settings → Security → Privacy & security → Third-party MCP clients).
 - The `mcp` Python package in the Hermes venv (Hermes installs it; check with
-  `terminal`: `~/.hermes/hermes-agent/venv/bin/python -c "import mcp"`).
+  `terminal`: `~/.hermes/hermes-agent/venv/bin/python -c "import mcp"`; on a
+  system-wide install the venv is `/usr/local/lib/hermes-agent/venv` instead).
 - MCP tool calls spend **real Lovable credits** (builds, chat iterations). SQL
   queries, file reads, and diffs are free.
 
@@ -76,7 +77,13 @@ dynamic client registration fixes it.
    Completion check: output shows `✓ Authenticated — N tool(s) available` and
    `$HERMES_HOME/mcp-tokens/lovable.json` exists.
 4. Verify: `hermes mcp test lovable` connects and lists ~40 tools.
-5. Restart the Hermes session (or spawn a new one) — MCP tools load at startup
+5. Enable the server — step 1 saved it as `enabled: false`, and logging in does
+   not flip it, so the gateway never loads its tools:
+   ```
+   hermes config set mcp_servers.lovable.enabled true
+   ```
+   Completion check: `hermes mcp ls` shows `lovable` as `✓ enabled`.
+6. Restart the Hermes session (or spawn a new one) — MCP tools load at startup
    as `mcp_lovable_<tool>` and are available in every conversation on every
    platform. The current session will NOT see them (loader initializes at
    session start; that's expected, not a bug).
@@ -85,7 +92,9 @@ dynamic client registration fixes it.
 
 Prefer the injected `mcp_lovable_*` tools in normal conversation. For scripts,
 cron jobs, or before a restart, use the bundled driver (run with the Hermes venv
-python, which has the `mcp` package):
+python, which has the `mcp` package — `~/.hermes/hermes-agent/venv/bin/python`
+on the default install, `/usr/local/lib/hermes-agent/venv/bin/python` on a
+system-wide install):
 
 ```
 ~/.hermes/hermes-agent/venv/bin/python scripts/lovable_mcp.py tools
