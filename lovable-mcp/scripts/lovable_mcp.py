@@ -5,7 +5,9 @@ Uses the OAuth tokens Hermes stores at $HERMES_HOME/mcp-tokens/lovable.json
 (completed via `hermes mcp login lovable`). Works without restarting Hermes —
 useful before MCP tools are loaded into a session, or from scripts/cron.
 
-Run with the Hermes venv python (it has the `mcp` package):
+Run with the Hermes venv python (it has the `mcp` package). Its location depends
+on the install: ~/.hermes/hermes-agent/venv (default installer) or
+/usr/local/lib/hermes-agent/venv (system-wide install).
     ~/.hermes/hermes-agent/venv/bin/python lovable_mcp.py tools
     ~/.hermes/hermes-agent/venv/bin/python lovable_mcp.py call list_workspaces
     ~/.hermes/hermes-agent/venv/bin/python lovable_mcp.py call create_project \
@@ -55,14 +57,14 @@ async def open_session(server: str):
     """Yield (context, session, http_client) using Hermes' stored token."""
     tok = load_token(server)
     headers = {"Authorization": f"Bearer {tok}"}
-    try:  # mcp >= 2.0
+    try:  # streamable_http_client exists in late mcp 1.x (e.g. 1.30, yields 3-tuple) and 2.x
         from mcp.client.streamable_http import (
             create_mcp_http_client,
             streamable_http_client as http_client_ctx,
         )
         http_client = create_mcp_http_client(headers=headers, timeout=None)
         ctx = http_client_ctx(SERVER_URL, http_client=http_client)
-        read, write = await ctx.__aenter__()
+        read, write, *_ = await ctx.__aenter__()
     except ImportError:  # mcp 1.x
         from mcp.client.streamable_http import streamablehttp_client
         http_client = None
